@@ -81,6 +81,53 @@ async function captureFailureEvidence(surface: Surface, logger: RunLogger, label
   return logger.dir;
 }
 
+/** Any condition an outcomeCheck matches is a business outcome, reported without escalating. */
+async function reportBusinessOutcome(
+  surface: Surface,
+  logger: RunLogger,
+  outcome: CapabilityArtifact["outcomeChecks"][number],
+  label: string,
+): Promise<ReplayOutcome> {
+  const evidenceRef = await captureFailureEvidence(surface, logger, label);
+  logger.log("replay", "business_outcome", { outcome: outcome.name });
+  return { kind: "business_outcome", outcome: outcome.name, description: outcome.description, evidenceRef };
+}
+
+/**
+ * Anything that reaches here is, by definition, a condition the artifact's author didn't
+ * anticipate — every hard failure escalates to a human, not just the ones that happen to
+ * throw an exception vs. the ones that silently fail a checkpoint.
+ */
+async function reportHardFailure(opts: {
+  surface: Surface;
+  logger: RunLogger;
+  escalation: EscalationController;
+  artifact: CapabilityArtifact;
+  stepIndex: number;
+  expected: string;
+  observed: string;
+  label: string;
+}): Promise<ReplayOutcome> {
+  const evidenceRef = await captureFailureEvidence(opts.surface, opts.logger, opts.label);
+  opts.logger.log("replay", "hard_failure", { step: opts.stepIndex, error: opts.observed });
+
+  const { humanActionsSummary } = await opts.escalation.escalate({
+    capability: opts.artifact.name,
+    stepIndex: opts.stepIndex,
+    reason: `Hard failure during replay: ${opts.observed}`,
+  });
+  opts.logger.log("human", "resume", { humanActionsSummary });
+
+  return {
+    kind: "failure",
+    stepIndex: opts.stepIndex,
+    expected: opts.expected,
+    observed: opts.observed,
+    message: `${opts.observed} (human notes: ${humanActionsSummary})`,
+    evidenceRef,
+  };
+}
+
 function redactParamsForLog(params: Record<string, string>, schema: CapabilityArtifact["inputSchema"]): Record<string, string> {
   const out: Record<string, string> = {};
   for (const [k, v] of Object.entries(params)) out[k] = schema[k]?.sensitive ? redactValue(v, k) : v;
@@ -135,31 +182,19 @@ export async function replayArtifact(opts: ReplayOptions): Promise<ReplayOutcome
         logger.log("replay", "action", { step: step.index, action: step.action, locator: step.locator });
       } catch (err) {
         const outcome = await matchOutcomeCheck(artifact, surface);
-        if (outcome) {
-          const evidenceRef = await captureFailureEvidence(surface, logger, `outcome-${outcome.name}-step-${step.index}`);
-          logger.log("replay", "business_outcome", { outcome: outcome.name, step: step.index });
-          return { kind: "business_outcome", outcome: outcome.name, description: outcome.description, evidenceRef };
-        }
+        if (outcome) return reportBusinessOutcome(surface, logger, outcome, `outcome-${outcome.name}-step-${step.index}`);
 
-        const evidenceRef = await captureFailureEvidence(surface, logger, `failure-step-${step.index}`);
         const message = err instanceof LocatorNotFoundError ? err.message : String(err);
-        logger.log("replay", "hard_failure", { step: step.index, error: message });
-
-        const { humanActionsSummary } = await escalation.escalate({
-          capability: artifact.name,
-          stepIndex: step.index,
-          reason: `Hard failure during replay: ${message}`,
-        });
-        logger.log("human", "resume", { humanActionsSummary });
-
-        return {
-          kind: "failure",
+        return reportHardFailure({
+          surface,
+          logger,
+          escalation,
+          artifact,
           stepIndex: step.index,
           expected: describeExpected(step),
           observed: message,
-          message: `${message} (human notes: ${humanActionsSummary})`,
-          evidenceRef,
-        };
+          label: `failure-step-${step.index}`,
+        });
       }
     } else {
       try {
@@ -168,13 +203,19 @@ export async function replayArtifact(opts: ReplayOptions): Promise<ReplayOutcome
         logger.log("replay", "extract", { step: step.index, outputKey: step.outputKey });
       } catch (err) {
         const outcome = await matchOutcomeCheck(artifact, surface);
-        if (outcome) {
-          const evidenceRef = await captureFailureEvidence(surface, logger, `outcome-${outcome.name}-step-${step.index}`);
-          return { kind: "business_outcome", outcome: outcome.name, description: outcome.description, evidenceRef };
-        }
-        const evidenceRef = await captureFailureEvidence(surface, logger, `failure-step-${step.index}`);
+        if (outcome) return reportBusinessOutcome(surface, logger, outcome, `outcome-${outcome.name}-step-${step.index}`);
+
         const message = err instanceof LocatorNotFoundError ? err.message : String(err);
-        return { kind: "failure", stepIndex: step.index, expected: describeExpected(step), observed: message, message, evidenceRef };
+        return reportHardFailure({
+          surface,
+          logger,
+          escalation,
+          artifact,
+          stepIndex: step.index,
+          expected: describeExpected(step),
+          observed: message,
+          label: `failure-step-${step.index}`,
+        });
       }
     }
 
@@ -182,19 +223,18 @@ export async function replayArtifact(opts: ReplayOptions): Promise<ReplayOutcome
       const ok = await verifyCheckpoint(surface, step.checkpoint);
       if (!ok) {
         const outcome = await matchOutcomeCheck(artifact, surface);
-        if (outcome) {
-          const evidenceRef = await captureFailureEvidence(surface, logger, `outcome-${outcome.name}-step-${step.index}`);
-          return { kind: "business_outcome", outcome: outcome.name, description: outcome.description, evidenceRef };
-        }
-        const evidenceRef = await captureFailureEvidence(surface, logger, `checkpoint-fail-step-${step.index}`);
-        return {
-          kind: "failure",
+        if (outcome) return reportBusinessOutcome(surface, logger, outcome, `outcome-${outcome.name}-step-${step.index}`);
+
+        return reportHardFailure({
+          surface,
+          logger,
+          escalation,
+          artifact,
           stepIndex: step.index,
           expected: JSON.stringify(step.checkpoint),
           observed: (await surface.observe()).ariaSnapshot.slice(0, 500),
-          message: "Step checkpoint was not satisfied.",
-          evidenceRef,
-        };
+          label: `checkpoint-fail-step-${step.index}`,
+        });
       }
     }
   }
@@ -202,20 +242,18 @@ export async function replayArtifact(opts: ReplayOptions): Promise<ReplayOutcome
   const finalOk = await verifyCheckpoint(surface, artifact.successCheckpoint);
   if (!finalOk) {
     const outcome = await matchOutcomeCheck(artifact, surface);
-    if (outcome) {
-      const evidenceRef = await captureFailureEvidence(surface, logger, `outcome-${outcome.name}-final`);
-      logger.log("replay", "business_outcome", { outcome: outcome.name, step: "final" });
-      return { kind: "business_outcome", outcome: outcome.name, description: outcome.description, evidenceRef };
-    }
-    const evidenceRef = await captureFailureEvidence(surface, logger, "checkpoint-fail-final");
-    return {
-      kind: "failure",
+    if (outcome) return reportBusinessOutcome(surface, logger, outcome, `outcome-${outcome.name}-final`);
+
+    return reportHardFailure({
+      surface,
+      logger,
+      escalation,
+      artifact,
       stepIndex: artifact.steps.length,
       expected: JSON.stringify(artifact.successCheckpoint),
       observed: (await surface.observe()).ariaSnapshot.slice(0, 500),
-      message: "Final success checkpoint was not satisfied.",
-      evidenceRef,
-    };
+      label: "checkpoint-fail-final",
+    });
   }
 
   logger.log("replay", "success", { outputs });

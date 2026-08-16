@@ -105,6 +105,23 @@ describe("replayArtifact", () => {
     if (outcome.kind === "business_outcome") expect(outcome.outcome).toBe("validation_error");
   });
 
+  it("escalates on a final-checkpoint mismatch too, not just an action exception", async () => {
+    const artifact = baseArtifact();
+    // click succeeds, but the URL never reaches the pattern the successCheckpoint expects
+    const surface = makeMockSurface({});
+    let escalated = false;
+    const outcome = await replayArtifact({
+      artifact,
+      params: {},
+      surface,
+      policy,
+      logger: testLogger(),
+      escalation: fakeEscalation(() => (escalated = true)),
+    });
+    expect(outcome.kind).toBe("failure");
+    expect(escalated).toBe(true);
+  });
+
   it("classifies an unrecognized failure as a hard failure, and escalates to a human", async () => {
     const artifact = baseArtifact();
     const surface = makeMockSurface({ clickThrows: true, textAfterClick: "Something unrelated" });
