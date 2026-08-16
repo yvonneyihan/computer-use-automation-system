@@ -1,0 +1,11 @@
+{
+  "allowedDomains": ["https://www.saucedemo.com"],
+  "allowedActionTypes": ["click", "type", "select", "navigate", "wait_for", "extract"],
+  "riskyActionMatchers": [
+    {
+      "reason": "Finalizes/submits an order — irreversible in a real back-office system.",
+      "locatorText": ["Finish"],
+      "locatorTestId": ["finish"]
+    }
+  ]
+}
