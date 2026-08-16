@@ -159,6 +159,10 @@ export async function runDiscoveryLoop(opts: DiscoveryLoopOptions): Promise<Disc
       max_tokens: 1024,
       system: buildSystemPrompt(opts.goal, opts.allowedDomains),
       tools: DISCOVERY_TOOLS,
+      // One action per observe-decide-act step: the loop only ever handles a single
+      // tool_use block, so parallel tool calls must be disabled or a multi-call turn
+      // leaves a tool_use without a matching tool_result and the next request 400s.
+      tool_choice: { type: "auto", disable_parallel_tool_use: true },
       messages,
     });
 
