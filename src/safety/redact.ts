@@ -5,8 +5,10 @@
 
 const REDACTED = "***REDACTED***";
 
-// Field names/roles that are always sensitive regardless of content.
-const SENSITIVE_FIELD_NAME_PATTERN = /pass(word)?|secret|token|ssn|social.?security|credit.?card|cvv|pin/i;
+// Field names/roles that are always sensitive regardless of content. "pin" is
+// word-bounded (unlike the others) because as a bare 3-letter substring it produces
+// false positives on ordinary camelCase names — e.g. "stepIndex" contains "pIn".
+const SENSITIVE_FIELD_NAME_PATTERN = /pass(word)?|secret|token|ssn|social.?security|credit.?card|cvv|\bpin\b/i;
 
 // Content patterns redacted as defense in depth, even in fields not flagged sensitive.
 const CONTENT_PATTERNS: RegExp[] = [

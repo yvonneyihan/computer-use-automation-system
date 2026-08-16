@@ -24,4 +24,15 @@ describe("redact", () => {
     expect(isSensitiveFieldName("apiToken")).toBe(true);
     expect(isSensitiveFieldName("itemName")).toBe(false);
   });
+
+  it("does not false-positive on ordinary field names that happen to contain 'pin' as a substring", () => {
+    // regression: "stepIndex" contains "pIn" (...ste-pIn-dex), which matched the old
+    // unbounded /pin/i pattern and redacted plain numeric step indices in result.json
+    expect(isSensitiveFieldName("stepIndex")).toBe(false);
+    expect(isSensitiveFieldName("evidenceRef")).toBe(false);
+  });
+
+  it("still catches a field genuinely named pin", () => {
+    expect(isSensitiveFieldName("pin")).toBe(true);
+  });
 });
