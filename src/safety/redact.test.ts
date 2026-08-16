@@ -35,4 +35,15 @@ describe("redact", () => {
   it("still catches a field genuinely named pin", () => {
     expect(isSensitiveFieldName("pin")).toBe(true);
   });
+
+  it("does not mangle a 13-digit epoch timestamp embedded in a file path", () => {
+    // regression: run ids embed Date.now() (13 digits), which collided with the
+    // credit-card-like digit-run pattern and corrupted evidenceRef paths
+    const path = "/evidence/replay-add_item_to_cart_checkout-1786922318692/result.json";
+    expect(redactValue(path)).toBe(path);
+  });
+
+  it("still redacts a 16-digit card-like number", () => {
+    expect(redactValue("card on file: 4111111111111111")).toContain("***REDACTED***");
+  });
 });

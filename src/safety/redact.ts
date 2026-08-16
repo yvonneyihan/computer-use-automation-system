@@ -13,7 +13,11 @@ const SENSITIVE_FIELD_NAME_PATTERN = /pass(word)?|secret|token|ssn|social.?secur
 // Content patterns redacted as defense in depth, even in fields not flagged sensitive.
 const CONTENT_PATTERNS: RegExp[] = [
   /\b\d{3}-\d{2}-\d{4}\b/g, // SSN
-  /\b(?:\d[ -]*?){13,19}\b/g, // credit-card-like digit runs
+  // Credit-card-like digit runs. Lower bound is 14, not 13: 13-digit epoch millisecond
+  // timestamps (used throughout this project's run ids, e.g. evidence/replay-...-1786922318692)
+  // are otherwise indistinguishable from a legacy 13-digit Visa number and were corrupting
+  // evidenceRef paths in result.json. Modern cards are overwhelmingly 15-16 digits.
+  /\b(?:\d[ -]*?){14,19}\b/g,
   /\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Za-z]{2,}\b/g, // email
 ];
 
