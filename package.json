@@ -9,6 +9,8 @@
     "discover": "tsx src/cli/discover.ts",
     "replay": "tsx src/cli/replay.ts",
     "operator": "tsx src/cli/operator.ts",
+    "capabilities": "tsx src/cli/capabilities.ts",
+    "agent-invoke": "tsx src/cli/agent-invoke.ts",
     "test": "vitest run",
     "test:watch": "vitest"
   },
