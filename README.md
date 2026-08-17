@@ -87,6 +87,21 @@ npm run replay -- --artifact artifacts/add_item_to_cart_checkout.json \
 This blocks — see the next section for how to resolve it. A full example run is already
 saved under `/evidence/` if you'd rather just inspect one than trigger a fresh one.
 
+### Agent-facing capability interface (stretch goal)
+
+Saved artifacts are also discoverable and invocable as typed tools, not just via the CLI
+directly:
+
+```bash
+npm run capabilities   # lists every saved capability with its typed inputs/outputs
+npm run agent-invoke -- --instruction "Add the item to the cart and get to checkout for member standard_user, password secret_sauce, name Jane Doe, zip 94107"
+```
+
+`agent-invoke` makes one real Claude call with the capability catalog exposed as tools;
+Claude picks a capability by name and fills in typed args from the instruction, then that
+choice is dispatched straight to the same deterministic `replayArtifact()` used above —
+no LLM involved in actually executing it. See REPORT.md § Cuts for the design rationale.
+
 ### Human escalation / handoff
 
 If discovery hits max steps/timeout, or explicitly calls its `escalate` tool, or replay
@@ -121,7 +136,8 @@ src/
   safety/         Allowlist enforcement + redaction
   escalation/      Stuck detection, intervention requests, pause/resume
   observability/  Structured JSONL logging + evidence capture
-  cli/            discover / replay / operator entry points
+  capabilities/   Artifact catalog as callable tools (stretch goal) + dispatch
+  cli/            discover / replay / operator / capabilities / agent-invoke entry points
 artifacts/         Saved capability artifacts (JSON)
 evidence/          Per-run logs, screenshots, results
 config/            Allowlist / safety policy

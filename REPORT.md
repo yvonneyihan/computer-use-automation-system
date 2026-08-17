@@ -164,6 +164,17 @@ before both were caught and fixed.
 
 ## 7. Cuts
 
+One stretch goal implemented: **agent-facing capability interface**
+(`src/capabilities/`, `npm run agent-invoke`). Saved artifacts are exposed as Anthropic
+tool definitions (`toAnthropicTools()`); a small demo (`agent-invoke.ts`) has a real
+Claude call see the catalog, pick a capability by name, and fill in typed args from a
+plain-English instruction — then dispatches straight to `replayArtifact()`, the same
+deterministic path `replay` uses, so it inherits every safety/redaction guarantee rather
+than re-implementing them. Chosen because it directly demonstrates the assignment's own
+framing (§1): the agent-facing product decides *what*, this system decides *how*.
+Building it exposed a real bug in `ArtifactStore.list()` (bare filenames weren't
+resolvable by `load()`), caught by a test before it shipped.
+
 - **Operator console** — a CLI, not co-browsing. Explicitly allowed to mock; the handoff
   mechanism underneath is real.
 - **Legacy-web and desktop surfaces** — designed (§4), not built, as instructed.
@@ -171,8 +182,8 @@ before both were caught and fixed.
   non-accessible surface (e.g. canvas UI), not the environment described in the brief.
 - **Confidence scoring / approval gating** — `status` field exists, nothing reads it yet.
   Next: gate unattended (headless, no-escalation) replay on `approved`.
-- **Stretch goals** (multi-run stability, LLM-assisted replay recovery, cross-tenant
-  canonicalization) — skipped for full depth on the required core, per the brief's own
-  preference.
+- **Other stretch goals** (multi-run stability, LLM-assisted replay recovery, cross-tenant
+  canonicalization) — skipped in favor of full depth on the required core plus the one
+  stretch goal above, per the brief's own "at most one or two, depth over breadth."
 - **Auto-resume after replay handoff** — reports the failure with notes rather than
   continuing. Next: re-verify the checkpoint post-resume and continue if it holds.
