@@ -34,8 +34,14 @@ export class ArtifactStore {
     return CapabilityArtifactSchema.parse(JSON.parse(raw));
   }
 
+  /** Returns full, directly-loadable paths (not bare filenames — `load()` expects
+   * either a real path or a raw capability name to slugify, and a bare filename like
+   * "foo.json" is neither: existsSync() misses it relative to cwd, and slugify() would
+   * mangle its own ".json" into "_json.json"). */
   list(): string[] {
     if (!existsSync(this.dir)) return [];
-    return readdirSync(this.dir).filter((f) => f.endsWith(".json"));
+    return readdirSync(this.dir)
+      .filter((f) => f.endsWith(".json"))
+      .map((f) => path.join(this.dir, f));
   }
 }
