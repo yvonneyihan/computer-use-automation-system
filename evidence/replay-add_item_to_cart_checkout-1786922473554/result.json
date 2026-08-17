@@ -1,0 +1,6 @@
+{
+  "kind": "business_outcome",
+  "outcome": "validation_error",
+  "description": "A required checkout field (first name, last name, or zip/postal code) was left blank.",
+  "evidenceRef": "/Users/yvonne/Desktop/bank-system/evidence/replay-add_item_to_cart_checkout-1786922473554"
+}

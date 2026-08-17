@@ -1,0 +1,13 @@
+{"ts":"2026-08-16T23:21:07.511Z","actor":"system","type":"replay_start","data":{"artifact":"add_item_to_cart_checkout","version":1,"params":{"username":"standard_user","secret_field_1":"***REDACTED***","firstName":"Jane","lastName":"Doe","zipCode":"94107"}}}
+{"ts":"2026-08-16T23:21:07.613Z","actor":"replay","type":"action","data":{"step":0,"action":"type","locator":{"role":{"role":"textbox","name":"Username"}}}}
+{"ts":"2026-08-16T23:21:07.666Z","actor":"replay","type":"action","data":{"step":1,"action":"type","locator":{"role":{"role":"textbox","name":"Password"}}}}
+{"ts":"2026-08-16T23:21:07.771Z","actor":"replay","type":"action","data":{"step":2,"action":"click","locator":{"role":{"role":"button","name":"Login"}}}}
+{"ts":"2026-08-16T23:21:07.795Z","actor":"replay","type":"action","data":{"step":5,"action":"click","locator":{"testId":"add-to-cart-sauce-labs-backpack"}}}
+{"ts":"2026-08-16T23:21:07.869Z","actor":"replay","type":"action","data":{"step":7,"action":"click","locator":{"testId":"shopping-cart-link"}}}
+{"ts":"2026-08-16T23:21:07.929Z","actor":"replay","type":"action","data":{"step":9,"action":"click","locator":{"testId":"checkout"}}}
+{"ts":"2026-08-16T23:21:07.942Z","actor":"replay","type":"action","data":{"step":11,"action":"click","locator":{"testId":"firstName"}}}
+{"ts":"2026-08-16T23:21:07.948Z","actor":"replay","type":"action","data":{"step":12,"action":"type","locator":{"testId":"firstName"}}}
+{"ts":"2026-08-16T23:21:07.954Z","actor":"replay","type":"action","data":{"step":13,"action":"type","locator":{"testId":"lastName"}}}
+{"ts":"2026-08-16T23:21:07.961Z","actor":"replay","type":"action","data":{"step":14,"action":"type","locator":{"testId":"postalCode"}}}
+{"ts":"2026-08-16T23:21:08.021Z","actor":"replay","type":"action","data":{"step":16,"action":"click","locator":{"testId":"continue"}}}
+{"ts":"2026-08-16T23:21:08.021Z","actor":"replay","type":"success","data":{"outputs":{}}}

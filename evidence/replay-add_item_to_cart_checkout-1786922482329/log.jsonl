@@ -1,0 +1,6 @@
+{"ts":"2026-08-16T23:21:22.938Z","actor":"system","type":"replay_start","data":{"artifact":"add_item_to_cart_checkout","version":1,"params":{"username":"wrong_user","secret_field_1":"***REDACTED***","firstName":"Jane","lastName":"Doe","zipCode":"94107"}}}
+{"ts":"2026-08-16T23:21:22.996Z","actor":"replay","type":"action","data":{"step":0,"action":"type","locator":{"role":{"role":"textbox","name":"Username"}}}}
+{"ts":"2026-08-16T23:21:23.024Z","actor":"replay","type":"action","data":{"step":1,"action":"type","locator":{"role":{"role":"textbox","name":"Password"}}}}
+{"ts":"2026-08-16T23:21:23.044Z","actor":"replay","type":"action","data":{"step":2,"action":"click","locator":{"role":{"role":"button","name":"Login"}}}}
+{"ts":"2026-08-16T23:21:23.092Z","actor":"replay","type":"hard_failure","data":{"step":5,"error":"Could not resolve locator through any tier: {\"testId\":\"add-to-cart-sauce-labs-backpack\"}"}}
+{"ts":"2026-08-16T23:21:42.111Z","actor":"human","type":"resume","data":{"humanActionsSummary":"Checked the live browser window: it's still on the login page showing 'Epic sadface: Username and password do not match any user in this service.' The credentials passed to this replay were wrong. No fix needed in the artifact itself - this is bad input, not a broken capability."}}

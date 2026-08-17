@@ -1,0 +1,178 @@
+{
+  "schemaVersion": "1.0",
+  "id": "cdfa5aa8-7aa1-4f98-a164-f903ba26205c",
+  "name": "add_item_to_cart_checkout",
+  "description": "Add the Sauce Labs Backpack to the cart and reach the checkout overview page",
+  "version": 1,
+  "status": "draft",
+  "target": {
+    "app": "saucedemo",
+    "baseUrl": "https://www.saucedemo.com",
+    "testIdAttribute": "data-test"
+  },
+  "createdAt": "2026-08-16T22:32:09.758Z",
+  "updatedAt": "2026-08-16T22:32:09.759Z",
+  "createdBy": "discovery-agent",
+  "inputSchema": {
+    "username": {
+      "type": "string",
+      "description": "Used in: Enter username",
+      "required": true,
+      "sensitive": false
+    },
+    "secret_field_1": {
+      "type": "string",
+      "description": "Used in: Enter password",
+      "required": true,
+      "sensitive": true
+    },
+    "firstName": {
+      "type": "string",
+      "description": "Used in: Enter first name",
+      "required": true,
+      "sensitive": false
+    },
+    "lastName": {
+      "type": "string",
+      "description": "Used in: Enter last name",
+      "required": true,
+      "sensitive": false
+    },
+    "zipCode": {
+      "type": "string",
+      "description": "Used in: Enter zip/postal code",
+      "required": true,
+      "sensitive": false
+    }
+  },
+  "outputSchema": {},
+  "steps": [
+    {
+      "index": 0,
+      "action": "type",
+      "description": "Enter username",
+      "locator": {
+        "role": {
+          "role": "textbox",
+          "name": "Username"
+        }
+      },
+      "valueTemplate": "{{username}}"
+    },
+    {
+      "index": 1,
+      "action": "type",
+      "description": "Enter password",
+      "locator": {
+        "role": {
+          "role": "textbox",
+          "name": "Password"
+        }
+      },
+      "valueTemplate": "{{secret_field_1}}"
+    },
+    {
+      "index": 2,
+      "action": "click",
+      "description": "Submit login form",
+      "locator": {
+        "role": {
+          "role": "button",
+          "name": "Login"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "action": "click",
+      "description": "Add Sauce Labs Backpack to cart",
+      "locator": {
+        "testId": "add-to-cart-sauce-labs-backpack"
+      }
+    },
+    {
+      "index": 7,
+      "action": "click",
+      "description": "Open cart",
+      "locator": {
+        "testId": "shopping-cart-link"
+      }
+    },
+    {
+      "index": 9,
+      "action": "click",
+      "description": "Proceed to checkout",
+      "locator": {
+        "testId": "checkout"
+      }
+    },
+    {
+      "index": 11,
+      "action": "click",
+      "description": "Focus first name field",
+      "locator": {
+        "testId": "firstName"
+      }
+    },
+    {
+      "index": 12,
+      "action": "type",
+      "description": "Enter first name",
+      "locator": {
+        "testId": "firstName"
+      },
+      "valueTemplate": "{{firstName}}"
+    },
+    {
+      "index": 13,
+      "action": "type",
+      "description": "Enter last name",
+      "locator": {
+        "testId": "lastName"
+      },
+      "valueTemplate": "{{lastName}}"
+    },
+    {
+      "index": 14,
+      "action": "type",
+      "description": "Enter zip/postal code",
+      "locator": {
+        "testId": "postalCode"
+      },
+      "valueTemplate": "{{zipCode}}"
+    },
+    {
+      "index": 16,
+      "action": "click",
+      "description": "Continue to checkout overview",
+      "locator": {
+        "testId": "continue"
+      }
+    }
+  ],
+  "successCheckpoint": {
+    "type": "urlMatches",
+    "pattern": "checkout-step-two.html"
+  },
+  "outcomeChecks": [
+    {
+      "name": "validation_error",
+      "checkpoint": {
+        "type": "elementText",
+        "locator": {
+          "testId": "error"
+        },
+        "pattern": "required"
+      },
+      "mapsTo": "business_outcome",
+      "description": "A required checkout field (first name, last name, or zip/postal code) was left blank."
+    }
+  ],
+  "recoverySpec": [],
+  "policy": {
+    "allowedDomains": [
+      "https://www.saucedemo.com"
+    ],
+    "riskLevel": "safe"
+  }
+}

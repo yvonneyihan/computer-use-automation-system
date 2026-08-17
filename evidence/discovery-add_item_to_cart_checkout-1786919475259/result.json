@@ -1,0 +1,122 @@
+{
+  "success": true,
+  "reason": "Successfully added Sauce Labs Backpack to cart and navigated through checkout to reach the Checkout: Overview page, showing the item, price total ($32.39), payment and shipping info. Stopped before clicking Finish to avoid submitting the order.",
+  "trace": [
+    {
+      "index": 0,
+      "action": "type",
+      "description": "Enter username",
+      "locator": {
+        "role": {
+          "role": "textbox",
+          "name": "Username"
+        }
+      },
+      "value": "standard_user",
+      "paramName": "username",
+      "sensitive": false
+    },
+    {
+      "index": 1,
+      "action": "type",
+      "description": "Enter password",
+      "locator": {
+        "role": {
+          "role": "textbox",
+          "name": "Password"
+        }
+      },
+      "paramName": "secret_field_1",
+      "sensitive": true
+    },
+    {
+      "index": 2,
+      "action": "click",
+      "description": "Submit login form",
+      "locator": {
+        "role": {
+          "role": "button",
+          "name": "Login"
+        }
+      }
+    },
+    {
+      "index": 5,
+      "action": "click",
+      "description": "Add Sauce Labs Backpack to cart",
+      "locator": {
+        "testId": "add-to-cart-sauce-labs-backpack"
+      }
+    },
+    {
+      "index": 7,
+      "action": "click",
+      "description": "Open cart",
+      "locator": {
+        "testId": "shopping-cart-link"
+      }
+    },
+    {
+      "index": 9,
+      "action": "click",
+      "description": "Proceed to checkout",
+      "locator": {
+        "testId": "checkout"
+      }
+    },
+    {
+      "index": 11,
+      "action": "click",
+      "description": "Focus first name field",
+      "locator": {
+        "testId": "firstName"
+      }
+    },
+    {
+      "index": 12,
+      "action": "type",
+      "description": "Enter first name",
+      "locator": {
+        "testId": "firstName"
+      },
+      "value": "John",
+      "paramName": "firstName",
+      "sensitive": false
+    },
+    {
+      "index": 13,
+      "action": "type",
+      "description": "Enter last name",
+      "locator": {
+        "testId": "lastName"
+      },
+      "value": "Doe",
+      "paramName": "lastName",
+      "sensitive": false
+    },
+    {
+      "index": 14,
+      "action": "type",
+      "description": "Enter zip/postal code",
+      "locator": {
+        "testId": "postalCode"
+      },
+      "value": "12345",
+      "paramName": "zipCode",
+      "sensitive": false
+    },
+    {
+      "index": 16,
+      "action": "click",
+      "description": "Continue to checkout overview",
+      "locator": {
+        "testId": "continue"
+      }
+    }
+  ],
+  "outputs": {},
+  "successCheckpoint": {
+    "type": "urlMatches",
+    "pattern": "checkout-step-two.html"
+  }
+}

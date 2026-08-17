@@ -1,0 +1,11 @@
+{
+  "capability": "add_item_to_cart_checkout",
+  "stepIndex": 5,
+  "reason": "Hard failure during replay: Could not resolve locator through any tier: {\"testId\":\"add-to-cart-sauce-labs-backpack\"}",
+  "id": "a263a284-6496-4a92-b96e-2bbf76f20e0e",
+  "runDir": "/Users/yvonne/Desktop/bank-system/evidence/replay-add_item_to_cart_checkout-1786922482329",
+  "status": "resolved",
+  "createdAt": "2026-08-16T23:21:23.093Z",
+  "resolvedAt": "2026-08-16T23:21:41.393Z",
+  "humanActionsSummary": "Checked the live browser window: it's still on the login page showing 'Epic sadface: Username and password do not match any user in this service.' The credentials passed to this replay were wrong. No fix needed in the artifact itself - this is bad input, not a broken capability."
+}
